@@ -25,10 +25,7 @@ app.post("/create", (req, res) => {
         if (values.includes(null)) {
             return res.json("Error: Name and Email cannot be null");
         }
-        // if (err) {
-        //     console.error("Error executing SQL query:", err);
-        //     return res.json("Error");
-        // }
+
         console.log("Database response:", data);
         return res.json(data);
     });
@@ -42,10 +39,7 @@ app.put("/update/:id", (req, res) => {
         if (values.includes(null)) {
             return res.json("Error: Name and Email cannot be null");
         }
-        // if (err) {
-        //     console.error("Error executing SQL query:", err);
-        //     return res.json("Error");
-        // }
+
         console.log("Database response:", data);
         return res.json(data);
     });
