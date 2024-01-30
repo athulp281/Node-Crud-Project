@@ -1,24 +1,16 @@
 const express = require("express");
-const app = express();
-// bodyParser = require("body-parser");
-require("express-async-errors");
-
-const db = require("./db");
+const cors = require("cors");
 const bodyParser = require("body-parser");
-let studentRoute = require("./routes/student.route");
+const studentRoutes = require("./routes/student.route");
 
-//middleware
+const app = express();
+app.use(cors());
 app.use(bodyParser.json());
-app.use("student/", studentRoute);
 
-app.use((err, req, res, next) => {
-    console.log(err);
-    res.status(err.status || 500).send("something went wrong..");
+app.use("/", studentRoutes);
+
+const PORT = process.env.PORT || 8081;
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
-
-db.query("SELECT 1")
-    .then((data) => {
-        console.log("connection done"),
-            app.listen(8081, () => console.log("server started at 8081"));
-    })
-    .catch((err) => console.log("db connection failed \n" + err));
