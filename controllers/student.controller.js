@@ -1,26 +1,37 @@
 const studentService = require("../services/student.service");
+const Student = require("../models/student.model");
 
-function getAllStudents(req, res) {
-    studentService.getAllStudents((err, data) => {
-        if (err) return res.json("Error");
-        return res.json(data);
-    });
-}
-
-function createStudent(req, res) {
-    const studentData = [req.body.Name, req.body.Email];
-
-    if (studentData.includes(null)) {
-        return res.json("Error: Name and Email cannot be null");
+async function getAllStudents(req, res) {
+    try {
+        const students = await studentService.getAllStudents();
+        return res.json(students);
+    } catch (error) {
+        return res.json("Error");
     }
-
-    studentService.createStudent([studentData], (err, data) => {
-        console.log("Database response:", data);
-        return res.json(data);
-    });
 }
 
-function updateStudent(req, res) {
+async function createStudent(req, res) {
+    const studentData = [req.body.Name, req.body.Email];
+    const existingStudent = await Student.findOne({
+        where: { Email: studentData[1] },
+    });
+
+    try {
+        if (studentData.includes(null)) {
+            return res.json("Error: Name and Email cannot be null");
+        } else if (existingStudent) {
+            return res.status(400).json("Error: Email already exists");
+        } else {
+            const newStudent = await studentService.createStudent(studentData);
+            console.log("Database response:", newStudent);
+            return res.json(newStudent);
+        }
+    } catch (error) {
+        return res.json("Error");
+    }
+}
+
+async function updateStudent(req, res) {
     const studentData = [req.body.Name, req.body.Email];
     const id = req.params.id;
 
@@ -28,19 +39,27 @@ function updateStudent(req, res) {
         return res.json("Error: Name and Email cannot be null");
     }
 
-    studentService.updateStudent(id, studentData, (err, data) => {
-        console.log("Database response:", data);
-        return res.json(data);
-    });
+    try {
+        const updatedStudent = await studentService.updateStudent(
+            id,
+            studentData
+        );
+        console.log("Database response:", updatedStudent);
+        return res.json(updatedStudent);
+    } catch (error) {
+        return res.json("Error");
+    }
 }
 
-function deleteStudent(req, res) {
+async function deleteStudent(req, res) {
     const id = req.params.id;
 
-    studentService.deleteStudent(id, (err, data) => {
-        if (err) return res.json("Error");
-        return res.json(data);
-    });
+    try {
+        const deletedStudent = await studentService.deleteStudent(id);
+        return res.json(deletedStudent);
+    } catch (error) {
+        return res.json("Error");
+    }
 }
 
 module.exports = {

@@ -1,23 +1,36 @@
-const db = require("../db");
+const Student = require("../models/student.model");
 
-function getAllStudents(callback) {
-    const sql = "SELECT * FROM student";
-    db.query(sql, callback);
+function getAllStudents() {
+    return Student.findAll();
 }
 
-function createStudent(studentData, callback) {
-    const sql = "INSERT INTO student (`Name`, `Email`) VALUES ?";
-    db.query(sql, [studentData], callback);
+function createStudent(studentData) {
+    return Student.create({
+        Name: studentData[0],
+        Email: studentData[1],
+    });
 }
 
-function updateStudent(id, studentData, callback) {
-    const sql = "UPDATE student SET `Name` = ?, `Email` = ? WHERE ID = ?";
-    db.query(sql, [...studentData, id], callback);
+function updateStudent(id, studentData) {
+    return Student.update(
+        {
+            Name: studentData[0],
+            Email: studentData[1],
+        },
+        {
+            where: {
+                id: id,
+            },
+        }
+    );
 }
 
-function deleteStudent(id, callback) {
-    const sql = "DELETE FROM student WHERE ID = ?";
-    db.query(sql, [id], callback);
+function deleteStudent(id) {
+    return Student.destroy({
+        where: {
+            id: id,
+        },
+    });
 }
 
 module.exports = {
